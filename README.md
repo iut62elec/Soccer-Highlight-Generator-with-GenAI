@@ -88,6 +88,28 @@ This example video highlight was generated using this solution. The tool process
     <img src="./sample_video/cover.jpg" alt="Watch the video" width="500"/>
 </a>
 
+
+## Cleanup
+
+### Cleaning Up After a Run
+
+Each execution of the Soccer Highlight Generator creates certain AWS resources like a dedicated S3 bucket, DynamoDB table, and SQS queue for processing. To delete these resources for a specific video after processing:
+
+1. Navigate to the AWS Lambda console in your AWS account.
+2. Find and select the Lambda function named `"SoccerHighlightsStack-deletes3sqsddbLambda"`.
+3. Run this function directly from the console without any input. This will remove the processing assets created during that specific execution.
+
+### Completely Removing the Solution
+
+If you wish to completely remove all assets associated with the Soccer Highlight Generator from your AWS account:
+
+1. Ensure that you have first performed the cleanup steps for individual runs as described above.
+2. Run the following command in your terminal where the CDK project is initialized:
+
+```bash
+cdk destroy
+
+
 ## Contributing
 
 Join the game by implementing and testing the Soccer Highlight Generator. Your feedback and contributions are welcome. Please follow the instructions in the repository and share your experiences to enhance sports entertainment with AWS and Generative AI.
