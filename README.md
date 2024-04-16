@@ -108,7 +108,7 @@ If you wish to completely remove all assets associated with the Soccer Highlight
 
 ```bash
 cdk destroy
-
+'''
 
 ## Contributing
 
