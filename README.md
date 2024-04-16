@@ -84,9 +84,9 @@ After the solution is deployed:
 This example video highlight was generated using this solution. The tool processed an already highlighted video from the 2022 FIFA World Cup final between Argentina and France, originally 5 minutes long, provided by Fox. This game was chosen due to its high-scoring nature, including 6 goals and subsequent penalty shots. The generated highlight effectively removes all unnecessary moments, retaining only the goals and penalty kicks, and reduces the video to 3 minutes. Feel free to test this tool with other games as well.
 
 
-
-[![Watch the video](./sample_video/cover.jpg)](https://vimeo.com/935254589?share=copy)
-
+<a href="https://vimeo.com/935254589?share=copy">
+    <img src="./sample_video/cover.jpg" alt="Watch the video" width="500"/>
+</a>
 
 ## Contributing
 
