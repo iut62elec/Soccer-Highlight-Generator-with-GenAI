@@ -5,11 +5,11 @@ Automate the creation of soccer match highlights with the power of Generative AI
 
 ## Author
 
-Pedram Jahangiri <www.linkedin.com/in/pedram-jahangiri>
+[Pedram Jahangiri](www.linkedin.com/in/pedram-jahangiri)
 
 ## Getting Started
 
-For a detailed explanation of what this solution does and the benefits it offers, please refer to my [blog post].
+For a detailed explanation of what this solution does and the benefits it offers, please refer to [my blog](https://medium.com/@pedram.jahangiri62/accelerating-sport-highlights-generation-with-genai-ffdfd5c51685)
 
 ### Prerequisites
 
