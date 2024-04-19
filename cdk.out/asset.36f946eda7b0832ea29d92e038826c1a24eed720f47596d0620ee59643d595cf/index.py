@@ -8,11 +8,7 @@ import boto3
 import io
 ssm = boto3.client('ssm')
 s3 = boto3.client('s3')
-
-
-region=os.environ.get('REGION')
-
-bedrock_runtime = boto3.client('bedrock-runtime', region_name=region)
+bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-west-1')
 
 dynamodb = boto3.resource('dynamodb')
 lambda_client = boto3.client('lambda')

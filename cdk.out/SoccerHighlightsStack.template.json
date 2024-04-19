@@ -1,0 +1,2127 @@
+{
+ "Resources": {
+  "SoccerHighlightLinkE14382D9": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "TopicName": "soccer_highlight_link"
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/SoccerHighlightLink/Resource"
+   }
+  },
+  "SoccerHighlightLinkjpedramamazoncom2A58F1CD": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Protocol": "email",
+    "TopicArn": {
+     "Ref": "SoccerHighlightLinkE14382D9"
+    },
+    "Endpoint": "jpedram@amazon.com"
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/SoccerHighlightLink/jpedram@amazon.com/Resource"
+   }
+  },
+  "VideoAssetsBucket3B8C668C": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/VideoAssetsBucket/Resource"
+   }
+  },
+  "VideoAssetsBucketPolicyEF2430EC": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "VideoAssetsBucket3B8C668C"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "CanonicalUser": {
+         "Fn::GetAtt": [
+          "OAIE1EFC67F",
+          "S3CanonicalUserId"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "VideoAssetsBucket3B8C668C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "VideoAssetsBucket3B8C668C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:GetObject",
+       "Effect": "Allow",
+       "Principal": {
+        "CanonicalUser": {
+         "Fn::GetAtt": [
+          "OAIE1EFC67F",
+          "S3CanonicalUserId"
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "VideoAssetsBucket3B8C668C",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/VideoAssetsBucket/Policy/Resource"
+   }
+  },
+  "OAIE1EFC67F": {
+   "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+   "Properties": {
+    "CloudFrontOriginAccessIdentityConfig": {
+     "Comment": "Allows CloudFront to reach the bucket"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/OAI/Resource"
+   }
+  },
+  "VideoAssetsDistributionCFDistribution5BD2E433": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "CacheBehaviors": [
+      {
+       "AllowedMethods": [
+        "GET",
+        "HEAD"
+       ],
+       "CachedMethods": [
+        "GET",
+        "HEAD"
+       ],
+       "Compress": true,
+       "ForwardedValues": {
+        "Cookies": {
+         "Forward": "none"
+        },
+        "QueryString": false
+       },
+       "PathPattern": "/public/HighlightClips/*",
+       "TargetOriginId": "origin2",
+       "ViewerProtocolPolicy": "redirect-to-https"
+      },
+      {
+       "AllowedMethods": [
+        "GET",
+        "HEAD"
+       ],
+       "CachedMethods": [
+        "GET",
+        "HEAD"
+       ],
+       "Compress": true,
+       "ForwardedValues": {
+        "Cookies": {
+         "Forward": "none"
+        },
+        "QueryString": false
+       },
+       "PathPattern": "/public/*",
+       "TargetOriginId": "origin3",
+       "ViewerProtocolPolicy": "redirect-to-https"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "AllowedMethods": [
+       "GET",
+       "HEAD"
+      ],
+      "CachedMethods": [
+       "GET",
+       "HEAD"
+      ],
+      "Compress": true,
+      "ForwardedValues": {
+       "Cookies": {
+        "Forward": "none"
+       },
+       "QueryString": false
+      },
+      "TargetOriginId": "origin1",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "DefaultRootObject": "index.html",
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "ConnectionAttempts": 3,
+       "ConnectionTimeout": 10,
+       "DomainName": {
+        "Fn::GetAtt": [
+         "VideoAssetsBucket3B8C668C",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "origin1",
+       "S3OriginConfig": {
+        "OriginAccessIdentity": {
+         "Fn::Join": [
+          "",
+          [
+           "origin-access-identity/cloudfront/",
+           {
+            "Ref": "OAIE1EFC67F"
+           }
+          ]
+         ]
+        }
+       }
+      },
+      {
+       "ConnectionAttempts": 3,
+       "ConnectionTimeout": 10,
+       "DomainName": {
+        "Fn::GetAtt": [
+         "VideoAssetsBucket3B8C668C",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "origin2",
+       "S3OriginConfig": {
+        "OriginAccessIdentity": {
+         "Fn::Join": [
+          "",
+          [
+           "origin-access-identity/cloudfront/",
+           {
+            "Ref": "OAIE1EFC67F"
+           }
+          ]
+         ]
+        }
+       }
+      },
+      {
+       "ConnectionAttempts": 3,
+       "ConnectionTimeout": 10,
+       "DomainName": {
+        "Fn::GetAtt": [
+         "VideoAssetsBucket3B8C668C",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "origin3",
+       "S3OriginConfig": {
+        "OriginAccessIdentity": {
+         "Fn::Join": [
+          "",
+          [
+           "origin-access-identity/cloudfront/",
+           {
+            "Ref": "OAIE1EFC67F"
+           }
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "PriceClass": "PriceClass_100",
+     "ViewerCertificate": {
+      "CloudFrontDefaultCertificate": true
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/VideoAssetsDistribution/CFDistribution"
+   }
+  },
+  "MediaConvertRole031A64A9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconvert.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonS3FullAccess"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonAPIGatewayInvokeFullAccess"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSElementalMediaConvertFullAccess"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "mediaconvert_role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/MediaConvertRole/Resource"
+   }
+  },
+  "LambdaExecutionRoleD5C26073": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Ref": "LambdaFullAccessPolicy7E21F1ED"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/LambdaExecutionRole/Resource"
+   }
+  },
+  "LambdaFullAccessPolicy7E21F1ED": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "dynamodb:*",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "ssm:GetParametersByPath",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "sqs:*",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:*",
+        "cloudwatch:*"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "bedrock:*",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "lambda:*",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "lambda:CreateEventSourceMapping",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "lambda:InvokeFunction",
+        "lambda:CreateEventSourceMapping"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "mediaconvert:*",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "",
+    "Path": "/"
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/LambdaFullAccessPolicy/Resource"
+   }
+  },
+  "StepFunctionsExecutionRole5B21F5A6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": {
+         "Fn::FindInMap": [
+          "ServiceprincipalMap",
+          {
+           "Ref": "AWS::Region"
+          },
+          "states"
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/StepFunctionsExecutionRole/Resource"
+   }
+  },
+  "StepFunctionsExecutionRoleDefaultPolicyD10BF6E3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "lambda:InvokeFunction",
+        "states:StartExecution",
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "createassetsLambdaA0242208",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "createassetsLambdaA0242208",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "createthumbnailsLambda6AD1B14A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "createthumbnailsLambda6AD1B14A",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "mediaconvertcheckLambda40A9B37D",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "mediaconvertcheckLambda40A9B37D",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "checksqsLambda72E2EADC",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "checksqsLambda72E2EADC",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "createshortclipsLambdaE7B15C57",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "createshortclipsLambdaE7B15C57",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "createlargeclipsLambda84F022EF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "createlargeclipsLambda84F022EF",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "mergeclipsLambda25EAE842",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "mergeclipsLambda25EAE842",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "sendemailLambda9BBA8A2A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "sendemailLambda9BBA8A2A",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "stepfunctionstatusLambdaCB78EC28",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "stepfunctionstatusLambdaCB78EC28",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StepFunctionsExecutionRoleDefaultPolicyD10BF6E3",
+    "Roles": [
+     {
+      "Ref": "StepFunctionsExecutionRole5B21F5A6"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/StepFunctionsExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "receivemessageLambda798FB342": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters831b4b8e15d33070a24dc89e73c4d69b55f4b7ddd47d98c427a4c470f5e72aa0S3BucketB2E663DD"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters831b4b8e15d33070a24dc89e73c4d69b55f4b7ddd47d98c427a4c470f5e72aa0S3VersionKeyA90C14FC"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters831b4b8e15d33070a24dc89e73c4d69b55f4b7ddd47d98c427a4c470f5e72aa0S3VersionKeyA90C14FC"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "REGION": "us-west-2"
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 3000,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/receive_messageLambda/Resource",
+    "aws:asset:path": "asset.831b4b8e15d33070a24dc89e73c4d69b55f4b7ddd47d98c427a4c470f5e72aa0",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "createassetsLambdaA0242208": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParametersba03fb27493e11c07f070fe398a82f94d2c1d5502b72d693a50944d0db12b506S3Bucket6F604048"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersba03fb27493e11c07f070fe398a82f94d2c1d5502b72d693a50944d0db12b506S3VersionKey4339931E"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersba03fb27493e11c07f070fe398a82f94d2c1d5502b72d693a50944d0db12b506S3VersionKey4339931E"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "RECEIVE_MESSAGE_LAMBDA_ARN": {
+       "Fn::GetAtt": [
+        "receivemessageLambda798FB342",
+        "Arn"
+       ]
+      },
+      "VIDEO_ASSETS_BUCKET_NAME": {
+       "Ref": "VideoAssetsBucket3B8C668C"
+      },
+      "REGION": "us-west-2"
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/create_assetsLambda/Resource",
+    "aws:asset:path": "asset.ba03fb27493e11c07f070fe398a82f94d2c1d5502b72d693a50944d0db12b506",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "createthumbnailsLambda6AD1B14A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParametersea7f9d627af98a5f506fb35e8f99c7514405c8fd6f9f6818781f9c35ebe040daS3BucketB7D5A0A5"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersea7f9d627af98a5f506fb35e8f99c7514405c8fd6f9f6818781f9c35ebe040daS3VersionKeyDF2B8E12"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersea7f9d627af98a5f506fb35e8f99c7514405c8fd6f9f6818781f9c35ebe040daS3VersionKeyDF2B8E12"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "MEDIA_CONVERT_ROLE_ARN": {
+       "Fn::GetAtt": [
+        "MediaConvertRole031A64A9",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/create_thumbnailsLambda/Resource",
+    "aws:asset:path": "asset.ea7f9d627af98a5f506fb35e8f99c7514405c8fd6f9f6818781f9c35ebe040da",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "checksqsLambda72E2EADC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters9027e1f2eaabc38c2273d208d4d6af1506bdaf01ce90a1e1f0c190e6bb7e1c4fS3Bucket6D370CCF"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters9027e1f2eaabc38c2273d208d4d6af1506bdaf01ce90a1e1f0c190e6bb7e1c4fS3VersionKey93E99ADA"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters9027e1f2eaabc38c2273d208d4d6af1506bdaf01ce90a1e1f0c190e6bb7e1c4fS3VersionKey93E99ADA"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "MEDIA_CONVERT_ROLE_ARN": {
+       "Fn::GetAtt": [
+        "MediaConvertRole031A64A9",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/check_sqsLambda/Resource",
+    "aws:asset:path": "asset.9027e1f2eaabc38c2273d208d4d6af1506bdaf01ce90a1e1f0c190e6bb7e1c4f",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "createshortclipsLambdaE7B15C57": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters1a7bf49f61945471802ae468ba4992da699213b3266b09e88d0d6dcaa21322c7S3Bucket04C5EE0C"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters1a7bf49f61945471802ae468ba4992da699213b3266b09e88d0d6dcaa21322c7S3VersionKey107980DD"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters1a7bf49f61945471802ae468ba4992da699213b3266b09e88d0d6dcaa21322c7S3VersionKey107980DD"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "MEDIA_CONVERT_ROLE_ARN": {
+       "Fn::GetAtt": [
+        "MediaConvertRole031A64A9",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/create_short_clipsLambda/Resource",
+    "aws:asset:path": "asset.1a7bf49f61945471802ae468ba4992da699213b3266b09e88d0d6dcaa21322c7",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "createlargeclipsLambda84F022EF": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters9b2b7594034ba55c04d05802d25f1d55d2ed0cc7f90dab1c04a66df5e11a79d7S3BucketAB2F0BF4"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters9b2b7594034ba55c04d05802d25f1d55d2ed0cc7f90dab1c04a66df5e11a79d7S3VersionKey466F2A73"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters9b2b7594034ba55c04d05802d25f1d55d2ed0cc7f90dab1c04a66df5e11a79d7S3VersionKey466F2A73"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "MEDIA_CONVERT_ROLE_ARN": {
+       "Fn::GetAtt": [
+        "MediaConvertRole031A64A9",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/create_large_clipsLambda/Resource",
+    "aws:asset:path": "asset.9b2b7594034ba55c04d05802d25f1d55d2ed0cc7f90dab1c04a66df5e11a79d7",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "mergeclipsLambda25EAE842": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters77bb19e3d9d284506c4aa6d6572ae640935fe831333cc201a3a5098eecceec74S3BucketB13169A1"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters77bb19e3d9d284506c4aa6d6572ae640935fe831333cc201a3a5098eecceec74S3VersionKey06DE9A99"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters77bb19e3d9d284506c4aa6d6572ae640935fe831333cc201a3a5098eecceec74S3VersionKey06DE9A99"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "MEDIA_CONVERT_ROLE_ARN": {
+       "Fn::GetAtt": [
+        "MediaConvertRole031A64A9",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/merge_clipsLambda/Resource",
+    "aws:asset:path": "asset.77bb19e3d9d284506c4aa6d6572ae640935fe831333cc201a3a5098eecceec74",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "mediaconvertcheckLambda40A9B37D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters67b222a510a0915fff10aae4522ac370fafe96491343ed02a651ac294c257dc6S3Bucket90CB1D64"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters67b222a510a0915fff10aae4522ac370fafe96491343ed02a651ac294c257dc6S3VersionKey88FE867E"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters67b222a510a0915fff10aae4522ac370fafe96491343ed02a651ac294c257dc6S3VersionKey88FE867E"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "MEDIA_CONVERT_ROLE_ARN": {
+       "Fn::GetAtt": [
+        "MediaConvertRole031A64A9",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/mediaconvert_checkLambda/Resource",
+    "aws:asset:path": "asset.67b222a510a0915fff10aae4522ac370fafe96491343ed02a651ac294c257dc6",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "stepfunctionstatusLambdaCB78EC28": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParametersb00a363f2854e411543c93b3bb6e005fc0af6ff4655aed8cbf6fb7a1d9f6d4d2S3Bucket2693660C"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersb00a363f2854e411543c93b3bb6e005fc0af6ff4655aed8cbf6fb7a1d9f6d4d2S3VersionKey6BF877EF"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersb00a363f2854e411543c93b3bb6e005fc0af6ff4655aed8cbf6fb7a1d9f6d4d2S3VersionKey6BF877EF"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "MEDIA_CONVERT_ROLE_ARN": {
+       "Fn::GetAtt": [
+        "MediaConvertRole031A64A9",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/stepfunction_statusLambda/Resource",
+    "aws:asset:path": "asset.b00a363f2854e411543c93b3bb6e005fc0af6ff4655aed8cbf6fb7a1d9f6d4d2",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "sendemailLambda9BBA8A2A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters2d8ab67acfad2699fabc7c0a84959264b149535460f09de0ca35bc67d910f188S3Bucket88E27598"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters2d8ab67acfad2699fabc7c0a84959264b149535460f09de0ca35bc67d910f188S3VersionKey7070FC51"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters2d8ab67acfad2699fabc7c0a84959264b149535460f09de0ca35bc67d910f188S3VersionKey7070FC51"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "CLOUDFRONT_ENDPOINT_URL": {
+       "Fn::GetAtt": [
+        "VideoAssetsDistributionCFDistribution5BD2E433",
+        "DomainName"
+       ]
+      },
+      "VIDEO_ASSETS_BUCKET_NAME": {
+       "Ref": "VideoAssetsBucket3B8C668C"
+      },
+      "TOPIC_ARN": {
+       "Ref": "SoccerHighlightLinkE14382D9"
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/send_emailLambda/Resource",
+    "aws:asset:path": "asset.2d8ab67acfad2699fabc7c0a84959264b149535460f09de0ca35bc67d910f188",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "deletes3sqsddbLambda3D14DD5D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParametersfd91a567cae8d8cbe130814cfeb25985c9d961250e5b05a51235b636f8079961S3BucketFAC6552A"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersfd91a567cae8d8cbe130814cfeb25985c9d961250e5b05a51235b636f8079961S3VersionKey28052E8E"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParametersfd91a567cae8d8cbe130814cfeb25985c9d961250e5b05a51235b636f8079961S3VersionKey28052E8E"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaExecutionRoleD5C26073",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "MEDIA_CONVERT_ROLE_ARN": {
+       "Fn::GetAtt": [
+        "MediaConvertRole031A64A9",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "LambdaExecutionRoleD5C26073"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/delete_s3_sqs_ddbLambda/Resource",
+    "aws:asset:path": "asset.fd91a567cae8d8cbe130814cfeb25985c9d961250e5b05a51235b636f8079961",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "SoccerHighlightsStateMachineBBD57E64": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StepFunctionsExecutionRole5B21F5A6",
+      "Arn"
+     ]
+    },
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"create assets\",\"States\":{\"create assets\":{\"Next\":\"Create Thumbnails\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "createassetsLambdaA0242208",
+         "Arn"
+        ]
+       },
+       "\",\"Payload\":{\"Executionid.$\":\"$$.Execution.Id\",\"entireInput.$\":\"$\"}}},\"Create Thumbnails\":{\"Next\":\"Wait for Thumbnail\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.guid\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "createthumbnailsLambda6AD1B14A",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"Wait for Thumbnail\":{\"Type\":\"Wait\",\"Seconds\":10,\"Next\":\"Thumbnails Status?\"},\"Thumbnails Status?\":{\"Next\":\"Thumbnails Finish?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2},{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":10,\"MaxAttempts\":300,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.status\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "mediaconvertcheckLambda40A9B37D",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"Thumbnails Finish?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status.Payload\",\"StringEquals\":\"COMPLETE\",\"Next\":\"Wait for classification\"},{\"Variable\":\"$.status.Payload\",\"StringEquals\":\"ERROR\",\"Next\":\"Failed\"}],\"Default\":\"Wait for Thumbnail\"},\"Wait for classification\":{\"Type\":\"Wait\",\"Seconds\":10,\"Next\":\"sqs empty?\"},\"sqs empty?\":{\"Next\":\"all classified?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2},{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":10,\"MaxAttempts\":300,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.status1\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "checksqsLambda72E2EADC",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"all classified?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status1.Payload\",\"StringEquals\":\"COMPLETE\",\"Next\":\"Start clipping jobs\"},{\"Variable\":\"$.status1.Payload\",\"StringEquals\":\"ERROR\",\"Next\":\"Failed\"}],\"Default\":\"Wait for classification\"},\"Start clipping jobs\":{\"Next\":\"Wait short clip\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.guid1\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "createshortclipsLambdaE7B15C57",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"Wait short clip\":{\"Type\":\"Wait\",\"Seconds\":10,\"Next\":\"ShortClips status\"},\"ShortClips status\":{\"Next\":\"short clips Finish?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2},{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":10,\"MaxAttempts\":300,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.status2\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "mediaconvertcheckLambda40A9B37D",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"short clips Finish?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status2.Payload\",\"StringEquals\":\"COMPLETE\",\"Next\":\"Final long clips\"},{\"Variable\":\"$.status2.Payload\",\"StringEquals\":\"ERROR\",\"Next\":\"Failed\"}],\"Default\":\"Wait short clip\"},\"Final long clips\":{\"Next\":\"Wait for long clips\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.guid2\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "createlargeclipsLambda84F022EF",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"Wait for long clips\":{\"Type\":\"Wait\",\"Seconds\":10,\"Next\":\"final clips status\"},\"final clips status\":{\"Next\":\"final clips Finish?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2},{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":10,\"MaxAttempts\":300,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.status3\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "mediaconvertcheckLambda40A9B37D",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"final clips Finish?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status3.Payload\",\"StringEquals\":\"COMPLETE\",\"Next\":\"Merge long clips\"},{\"Variable\":\"$.status3.Payload\",\"StringEquals\":\"ERROR\",\"Next\":\"Failed\"}],\"Default\":\"Wait for long clips\"},\"Merge long clips\":{\"Next\":\"Wait for merge long\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.guid3\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "mergeclipsLambda25EAE842",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"Wait for merge long\":{\"Type\":\"Wait\",\"Seconds\":10,\"Next\":\"merge clips status\"},\"merge clips status\":{\"Next\":\"final merge finish\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2},{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":10,\"MaxAttempts\":300,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.status4\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "mediaconvertcheckLambda40A9B37D",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"final merge finish\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status4.Payload\",\"StringEquals\":\"COMPLETE\",\"Next\":\"Get Highlight Link\"},{\"Variable\":\"$.status4.Payload\",\"StringEquals\":\"ERROR\",\"Next\":\"Failed\"}],\"Default\":\"Wait for merge long\"},\"Get Highlight Link\":{\"Next\":\"write status\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.outputs\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "sendemailLambda9BBA8A2A",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"write status\":{\"Next\":\"Success\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.status_write\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "stepfunctionstatusLambdaCB78EC28",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"Success\":{\"Type\":\"Succeed\"},\"Failed\":{\"Type\":\"Fail\"}},\"TimeoutSeconds\":18000}"
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "StepFunctionsExecutionRoleDefaultPolicyD10BF6E3",
+    "StepFunctionsExecutionRole5B21F5A6"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/SoccerHighlightsStateMachine/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21RTU/DMAz9LdyzwACJK6NoEhIT04q0s+d6nWmXVLEDQlH/O0q7siFx8nvPzx+y5/b25t7eXD3Cl8ywaq4T+kA2lQrYmIUIaalQs6tN4Z1oiKim2Ls1BDiSUshkQ+JjQMq48K5iZe8yWUHXsat7k7sncWLTu+8Yc24EZdwJBu6mikveG7mz6SliQ8PMExrD2reM32f5xEfyBEK9wdbHah+8U5veAtfsFogk8lKRU9ahuMieZfb87/hNb2n3zKKBd3Ha9ZL3huFo08a3wxWGuAIHNVXnTf8KZ31EvWnhuKvApmV0OA2ZcD7GDPI/xA5vMaLU7U9ZmSlII/Z16PDiPn1Dfw02bYHVlBGRqDJL4NYUB89IplRQWgEe2A3LX/K+7836Ww/eXd/Z+dw+XH0I8yxEp3wkuxnjD0wxfMRGAgAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "SoccerHighlightsStack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Parameters": {
+  "AssetParameters831b4b8e15d33070a24dc89e73c4d69b55f4b7ddd47d98c427a4c470f5e72aa0S3BucketB2E663DD": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"831b4b8e15d33070a24dc89e73c4d69b55f4b7ddd47d98c427a4c470f5e72aa0\""
+  },
+  "AssetParameters831b4b8e15d33070a24dc89e73c4d69b55f4b7ddd47d98c427a4c470f5e72aa0S3VersionKeyA90C14FC": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"831b4b8e15d33070a24dc89e73c4d69b55f4b7ddd47d98c427a4c470f5e72aa0\""
+  },
+  "AssetParameters831b4b8e15d33070a24dc89e73c4d69b55f4b7ddd47d98c427a4c470f5e72aa0ArtifactHash3AE92920": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"831b4b8e15d33070a24dc89e73c4d69b55f4b7ddd47d98c427a4c470f5e72aa0\""
+  },
+  "AssetParametersba03fb27493e11c07f070fe398a82f94d2c1d5502b72d693a50944d0db12b506S3Bucket6F604048": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"ba03fb27493e11c07f070fe398a82f94d2c1d5502b72d693a50944d0db12b506\""
+  },
+  "AssetParametersba03fb27493e11c07f070fe398a82f94d2c1d5502b72d693a50944d0db12b506S3VersionKey4339931E": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"ba03fb27493e11c07f070fe398a82f94d2c1d5502b72d693a50944d0db12b506\""
+  },
+  "AssetParametersba03fb27493e11c07f070fe398a82f94d2c1d5502b72d693a50944d0db12b506ArtifactHash7DB34F9C": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"ba03fb27493e11c07f070fe398a82f94d2c1d5502b72d693a50944d0db12b506\""
+  },
+  "AssetParametersea7f9d627af98a5f506fb35e8f99c7514405c8fd6f9f6818781f9c35ebe040daS3BucketB7D5A0A5": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"ea7f9d627af98a5f506fb35e8f99c7514405c8fd6f9f6818781f9c35ebe040da\""
+  },
+  "AssetParametersea7f9d627af98a5f506fb35e8f99c7514405c8fd6f9f6818781f9c35ebe040daS3VersionKeyDF2B8E12": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"ea7f9d627af98a5f506fb35e8f99c7514405c8fd6f9f6818781f9c35ebe040da\""
+  },
+  "AssetParametersea7f9d627af98a5f506fb35e8f99c7514405c8fd6f9f6818781f9c35ebe040daArtifactHash5F0987C4": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"ea7f9d627af98a5f506fb35e8f99c7514405c8fd6f9f6818781f9c35ebe040da\""
+  },
+  "AssetParameters9027e1f2eaabc38c2273d208d4d6af1506bdaf01ce90a1e1f0c190e6bb7e1c4fS3Bucket6D370CCF": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"9027e1f2eaabc38c2273d208d4d6af1506bdaf01ce90a1e1f0c190e6bb7e1c4f\""
+  },
+  "AssetParameters9027e1f2eaabc38c2273d208d4d6af1506bdaf01ce90a1e1f0c190e6bb7e1c4fS3VersionKey93E99ADA": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"9027e1f2eaabc38c2273d208d4d6af1506bdaf01ce90a1e1f0c190e6bb7e1c4f\""
+  },
+  "AssetParameters9027e1f2eaabc38c2273d208d4d6af1506bdaf01ce90a1e1f0c190e6bb7e1c4fArtifactHash73210F13": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"9027e1f2eaabc38c2273d208d4d6af1506bdaf01ce90a1e1f0c190e6bb7e1c4f\""
+  },
+  "AssetParameters1a7bf49f61945471802ae468ba4992da699213b3266b09e88d0d6dcaa21322c7S3Bucket04C5EE0C": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"1a7bf49f61945471802ae468ba4992da699213b3266b09e88d0d6dcaa21322c7\""
+  },
+  "AssetParameters1a7bf49f61945471802ae468ba4992da699213b3266b09e88d0d6dcaa21322c7S3VersionKey107980DD": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"1a7bf49f61945471802ae468ba4992da699213b3266b09e88d0d6dcaa21322c7\""
+  },
+  "AssetParameters1a7bf49f61945471802ae468ba4992da699213b3266b09e88d0d6dcaa21322c7ArtifactHashC7F1C4EE": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"1a7bf49f61945471802ae468ba4992da699213b3266b09e88d0d6dcaa21322c7\""
+  },
+  "AssetParameters9b2b7594034ba55c04d05802d25f1d55d2ed0cc7f90dab1c04a66df5e11a79d7S3BucketAB2F0BF4": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"9b2b7594034ba55c04d05802d25f1d55d2ed0cc7f90dab1c04a66df5e11a79d7\""
+  },
+  "AssetParameters9b2b7594034ba55c04d05802d25f1d55d2ed0cc7f90dab1c04a66df5e11a79d7S3VersionKey466F2A73": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"9b2b7594034ba55c04d05802d25f1d55d2ed0cc7f90dab1c04a66df5e11a79d7\""
+  },
+  "AssetParameters9b2b7594034ba55c04d05802d25f1d55d2ed0cc7f90dab1c04a66df5e11a79d7ArtifactHashE651B095": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"9b2b7594034ba55c04d05802d25f1d55d2ed0cc7f90dab1c04a66df5e11a79d7\""
+  },
+  "AssetParameters77bb19e3d9d284506c4aa6d6572ae640935fe831333cc201a3a5098eecceec74S3BucketB13169A1": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"77bb19e3d9d284506c4aa6d6572ae640935fe831333cc201a3a5098eecceec74\""
+  },
+  "AssetParameters77bb19e3d9d284506c4aa6d6572ae640935fe831333cc201a3a5098eecceec74S3VersionKey06DE9A99": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"77bb19e3d9d284506c4aa6d6572ae640935fe831333cc201a3a5098eecceec74\""
+  },
+  "AssetParameters77bb19e3d9d284506c4aa6d6572ae640935fe831333cc201a3a5098eecceec74ArtifactHash4DC8EE63": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"77bb19e3d9d284506c4aa6d6572ae640935fe831333cc201a3a5098eecceec74\""
+  },
+  "AssetParameters67b222a510a0915fff10aae4522ac370fafe96491343ed02a651ac294c257dc6S3Bucket90CB1D64": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"67b222a510a0915fff10aae4522ac370fafe96491343ed02a651ac294c257dc6\""
+  },
+  "AssetParameters67b222a510a0915fff10aae4522ac370fafe96491343ed02a651ac294c257dc6S3VersionKey88FE867E": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"67b222a510a0915fff10aae4522ac370fafe96491343ed02a651ac294c257dc6\""
+  },
+  "AssetParameters67b222a510a0915fff10aae4522ac370fafe96491343ed02a651ac294c257dc6ArtifactHash52BFA45E": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"67b222a510a0915fff10aae4522ac370fafe96491343ed02a651ac294c257dc6\""
+  },
+  "AssetParametersb00a363f2854e411543c93b3bb6e005fc0af6ff4655aed8cbf6fb7a1d9f6d4d2S3Bucket2693660C": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"b00a363f2854e411543c93b3bb6e005fc0af6ff4655aed8cbf6fb7a1d9f6d4d2\""
+  },
+  "AssetParametersb00a363f2854e411543c93b3bb6e005fc0af6ff4655aed8cbf6fb7a1d9f6d4d2S3VersionKey6BF877EF": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"b00a363f2854e411543c93b3bb6e005fc0af6ff4655aed8cbf6fb7a1d9f6d4d2\""
+  },
+  "AssetParametersb00a363f2854e411543c93b3bb6e005fc0af6ff4655aed8cbf6fb7a1d9f6d4d2ArtifactHashF0D15607": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"b00a363f2854e411543c93b3bb6e005fc0af6ff4655aed8cbf6fb7a1d9f6d4d2\""
+  },
+  "AssetParameters2d8ab67acfad2699fabc7c0a84959264b149535460f09de0ca35bc67d910f188S3Bucket88E27598": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"2d8ab67acfad2699fabc7c0a84959264b149535460f09de0ca35bc67d910f188\""
+  },
+  "AssetParameters2d8ab67acfad2699fabc7c0a84959264b149535460f09de0ca35bc67d910f188S3VersionKey7070FC51": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"2d8ab67acfad2699fabc7c0a84959264b149535460f09de0ca35bc67d910f188\""
+  },
+  "AssetParameters2d8ab67acfad2699fabc7c0a84959264b149535460f09de0ca35bc67d910f188ArtifactHash1D7AB75D": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"2d8ab67acfad2699fabc7c0a84959264b149535460f09de0ca35bc67d910f188\""
+  },
+  "AssetParametersfd91a567cae8d8cbe130814cfeb25985c9d961250e5b05a51235b636f8079961S3BucketFAC6552A": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"fd91a567cae8d8cbe130814cfeb25985c9d961250e5b05a51235b636f8079961\""
+  },
+  "AssetParametersfd91a567cae8d8cbe130814cfeb25985c9d961250e5b05a51235b636f8079961S3VersionKey28052E8E": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"fd91a567cae8d8cbe130814cfeb25985c9d961250e5b05a51235b636f8079961\""
+  },
+  "AssetParametersfd91a567cae8d8cbe130814cfeb25985c9d961250e5b05a51235b636f8079961ArtifactHash5BE87262": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"fd91a567cae8d8cbe130814cfeb25985c9d961250e5b05a51235b636f8079961\""
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-2"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "Mappings": {
+  "ServiceprincipalMap": {
+   "af-south-1": {
+    "states": "states.af-south-1.amazonaws.com"
+   },
+   "ap-east-1": {
+    "states": "states.ap-east-1.amazonaws.com"
+   },
+   "ap-northeast-1": {
+    "states": "states.ap-northeast-1.amazonaws.com"
+   },
+   "ap-northeast-2": {
+    "states": "states.ap-northeast-2.amazonaws.com"
+   },
+   "ap-northeast-3": {
+    "states": "states.ap-northeast-3.amazonaws.com"
+   },
+   "ap-south-1": {
+    "states": "states.ap-south-1.amazonaws.com"
+   },
+   "ap-southeast-1": {
+    "states": "states.ap-southeast-1.amazonaws.com"
+   },
+   "ap-southeast-2": {
+    "states": "states.ap-southeast-2.amazonaws.com"
+   },
+   "ap-southeast-3": {
+    "states": "states.ap-southeast-3.amazonaws.com"
+   },
+   "ca-central-1": {
+    "states": "states.ca-central-1.amazonaws.com"
+   },
+   "cn-north-1": {
+    "states": "states.cn-north-1.amazonaws.com"
+   },
+   "cn-northwest-1": {
+    "states": "states.cn-northwest-1.amazonaws.com"
+   },
+   "eu-central-1": {
+    "states": "states.eu-central-1.amazonaws.com"
+   },
+   "eu-north-1": {
+    "states": "states.eu-north-1.amazonaws.com"
+   },
+   "eu-south-1": {
+    "states": "states.eu-south-1.amazonaws.com"
+   },
+   "eu-south-2": {
+    "states": "states.eu-south-2.amazonaws.com"
+   },
+   "eu-west-1": {
+    "states": "states.eu-west-1.amazonaws.com"
+   },
+   "eu-west-2": {
+    "states": "states.eu-west-2.amazonaws.com"
+   },
+   "eu-west-3": {
+    "states": "states.eu-west-3.amazonaws.com"
+   },
+   "me-south-1": {
+    "states": "states.me-south-1.amazonaws.com"
+   },
+   "sa-east-1": {
+    "states": "states.sa-east-1.amazonaws.com"
+   },
+   "us-east-1": {
+    "states": "states.us-east-1.amazonaws.com"
+   },
+   "us-east-2": {
+    "states": "states.us-east-2.amazonaws.com"
+   },
+   "us-gov-east-1": {
+    "states": "states.us-gov-east-1.amazonaws.com"
+   },
+   "us-gov-west-1": {
+    "states": "states.us-gov-west-1.amazonaws.com"
+   },
+   "us-iso-east-1": {
+    "states": "states.amazonaws.com"
+   },
+   "us-iso-west-1": {
+    "states": "states.amazonaws.com"
+   },
+   "us-isob-east-1": {
+    "states": "states.amazonaws.com"
+   },
+   "us-west-1": {
+    "states": "states.us-west-1.amazonaws.com"
+   },
+   "us-west-2": {
+    "states": "states.us-west-2.amazonaws.com"
+   }
+  }
+ }
+}

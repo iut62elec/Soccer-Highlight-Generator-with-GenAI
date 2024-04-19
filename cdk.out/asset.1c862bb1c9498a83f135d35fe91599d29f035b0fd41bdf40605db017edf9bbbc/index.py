@@ -131,9 +131,7 @@ def lambda_handler(event, context):
     if 1==1:
         # Generate a random bucket name
         #Create the S3 bucket
-        bucket = s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={
-        'LocationConstraint': region  
-    })
+        bucket = s3.create_bucket(Bucket=bucket_name)
          # Wait until the bucket is created
         waiter = s3.get_waiter('bucket_exists')
         waiter.wait(Bucket=bucket_name)

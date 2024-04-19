@@ -1,0 +1,114 @@
+{
+    "Settings": {
+      "OutputGroups": [
+        {
+          "CustomName": "mp4CLIPoutput",
+          "Name": "File Group",
+          "Outputs": [
+            {
+              "ContainerSettings": {
+                "Container": "MP4",
+                "Mp4Settings": {
+                  "CslgAtom": "INCLUDE",
+                  "FreeSpaceBox": "EXCLUDE",
+                  "MoovPlacement": "PROGRESSIVE_DOWNLOAD"
+                }
+              },
+              "VideoDescription": {
+                "Width": 1280,
+                "ScalingBehavior": "DEFAULT",
+                "Height": 720,
+                "TimecodeInsertion": "DISABLED",
+                "AntiAlias": "ENABLED",
+                "Sharpness": 100,
+                "CodecSettings": {
+                  "Codec": "H_264",
+                  "H264Settings": {
+                    "InterlaceMode": "PROGRESSIVE",
+                    "NumberReferenceFrames": 3,
+                    "Syntax": "DEFAULT",
+                    "Softness": 0,
+                    "GopClosedCadence": 1,
+                    "GopSize": 90,
+                    "Slices": 1,
+                    "GopBReference": "DISABLED",
+                    "SlowPal": "DISABLED",
+                    "SpatialAdaptiveQuantization": "ENABLED",
+                    "TemporalAdaptiveQuantization": "ENABLED",
+                    "FlickerAdaptiveQuantization": "DISABLED",
+                    "EntropyEncoding": "CABAC",
+                    "Bitrate": 950000,
+                    "FramerateControl": "INITIALIZE_FROM_SOURCE",
+                    "RateControlMode": "CBR",
+                    "CodecProfile": "MAIN",
+                    "Telecine": "NONE",
+                    "MinIInterval": 0,
+                    "AdaptiveQuantization": "HIGH",
+                    "CodecLevel": "AUTO",
+                    "FieldEncoding": "PAFF",
+                    "SceneChangeDetect": "ENABLED",
+                    "QualityTuningLevel": "SINGLE_PASS_HQ",
+                    "FramerateConversionAlgorithm": "DUPLICATE_DROP",
+                    "UnregisteredSeiTimecode": "DISABLED",
+                    "GopSizeUnits": "FRAMES",
+                    "ParControl": "INITIALIZE_FROM_SOURCE",
+                    "NumberBFramesBetweenReferenceFrames": 2,
+                    "RepeatPps": "DISABLED"
+                  }
+                },
+                "AfdSignaling": "NONE",
+                "DropFrameTimecode": "ENABLED",
+                "RespondToAfd": "NONE",
+                "ColorMetadata": "INSERT"
+              },
+              "AudioDescriptions": [
+                {
+                  "CodecSettings": {
+                    "Codec": "AAC",
+                    "AacSettings": {
+                      "Bitrate": 96000,
+                      "CodingMode": "CODING_MODE_2_0",
+                      "SampleRate": 48000
+                    }
+                  }
+                }
+              ],
+              "NameModifier": "-trimmed-"
+            }
+          ],
+          "OutputGroupSettings": {
+            "Type": "FILE_GROUP_SETTINGS",
+            "FileGroupSettings": {
+              "Destination": ""
+            }
+          }
+        }
+      ],
+      "AdAvailOffset": 0,
+      "Inputs": [
+        {
+          "InputClippings": [
+            {
+              "EndTimecode": "00:00:10:00",
+              "StartTimecode": "00:00:00:00"
+            }
+          ],
+          "AudioSelectors": {
+            "Audio Selector 1": {
+              "DefaultSelection": "DEFAULT"
+            }
+          },
+          "VideoSelector": {
+            "ColorSpace": "FOLLOW"
+          },
+          "FilterEnable": "AUTO",
+          "PsiControl": "USE_PSI",
+          "FilterStrength": 0,
+          "DeblockFilter": "DISABLED",
+          "DenoiseFilter": "DISABLED",
+          "TimecodeSource": "ZEROBASED",
+          "FileInput": ""
+        }
+      ]
+    }
+  }

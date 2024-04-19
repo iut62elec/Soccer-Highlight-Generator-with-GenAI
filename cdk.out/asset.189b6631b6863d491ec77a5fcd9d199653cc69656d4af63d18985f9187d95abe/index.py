@@ -5,9 +5,7 @@ import json
 import os
 #from botocore.vendored import requests
 
-region=os.environ.get('REGION')
-
-s3 = boto3.client('s3',region_name=region)
+s3 = boto3.client('s3')
 dynamodb = boto3.client('dynamodb')
 sqs = boto3.client('sqs')
 lambda_client = boto3.client('lambda')
@@ -131,9 +129,7 @@ def lambda_handler(event, context):
     if 1==1:
         # Generate a random bucket name
         #Create the S3 bucket
-        bucket = s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={
-        'LocationConstraint': region  
-    })
+        bucket = s3.create_bucket(Bucket=bucket_name)
          # Wait until the bucket is created
         waiter = s3.get_waiter('bucket_exists')
         waiter.wait(Bucket=bucket_name)

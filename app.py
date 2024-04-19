@@ -19,6 +19,8 @@ from aws_cdk import aws_s3_deployment as s3deploy
 import tempfile
 
 
+region="us-west-2"
+
 class SoccerHighlightsStack(core.Stack):
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
@@ -232,7 +234,7 @@ class SoccerHighlightsStack(core.Stack):
         # Check if the function is either 'receive_message' or 'create_assets'
             if name in ['receive_message']:
                 timeout = core.Duration.minutes(15)  # Set timeout to 15 minutes
-                memory_size = 10240  # Set memory size to 10240 MB
+                memory_size = 3000  # Set memory size to 10240 MB
             else:
                 # For all other functions, use default values (or any other values you prefer)
                 timeout = core.Duration.minutes(15)  # Default timeout
@@ -247,6 +249,8 @@ class SoccerHighlightsStack(core.Stack):
                     role=role,
                     timeout=timeout,  # Apply custom or default timeout
                     memory_size=memory_size,  # Apply custom or default memory size
+                    environment={
+                    "REGION":region                }
                 )   
                 receive_message_lambda_arn = functions[name].function_arn
             elif name == 'create_assets':
@@ -260,8 +264,8 @@ class SoccerHighlightsStack(core.Stack):
                     memory_size=memory_size,  # Apply custom or default memory size
                     environment={
                     'RECEIVE_MESSAGE_LAMBDA_ARN': receive_message_lambda_arn,
-                    'VIDEO_ASSETS_BUCKET_NAME': self.video_assets_bucket.bucket_name
-                }
+                    'VIDEO_ASSETS_BUCKET_NAME': self.video_assets_bucket.bucket_name,
+                    "REGION":region                }
                 )
             elif name == 'send_email':
                  functions[name] = lambda_.Function(
