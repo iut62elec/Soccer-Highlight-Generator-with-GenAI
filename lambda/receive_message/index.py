@@ -59,15 +59,17 @@ def lambda_handler(event, context):
    
     
         prompt="""
-        Begin a meticulous inspection of the soccer game image at hand. Examine each aspect within the frame closely to identify and catalogue visible elements. Concentrate on pinpointing the location of the players, the soccer ball, and most importantly, the soccer goal — defined as the structure composed of the goalposts and the net. It is vital to distinguish the soccer goal from the field's white markings, such as midfield lines or sidelines. The classification is straightforward: an image is marked as 'Highlight' if the soccer goal is clearly present, without any consideration of the event's context or your knowledge of the game's significance. In contrast, if the soccer goal is not visible, classify the image as 'Normal'. Additionally, any frame that does not display the soccer field should be automatically labeled as 'Normal' as well. Focus purely on object presence within the image for categorization, adhering strictly to the visible inclusion of the entire soccer goal to determine a 'Highlight', independent of any other activity taking place on the field. Again, The soccer goal must be fully visible, including both goalposts and the entire net between them, to be classified as a 'Highlight'. Your final response for each analysis should be a single word: 'Normal' or 'Highlight'.
+        Begin a meticulous inspection of the soccer game image at hand. Examine each aspect within the frame closely to identify and catalogue visible elements. Concentrate on pinpointing the location of the players, the soccer ball, and most importantly, the soccer goal — defined as the structure composed of the goalposts and the net. It is vital to distinguish the soccer goal from the field's white markings, such as midfield lines or sidelines. The classification is straightforward: an image is marked as 'Highlight' if the soccer goal is clearly present, without any consideration of the event's context or your knowledge of the game's significance. In contrast, if the soccer goal is not visible, classify the image as 'Normal'. Additionally, any frame that does not display the soccer field should be automatically labeled as 'Normal' as well. Focus purely on object presence within the image for categorization, adhering strictly to the visible inclusion of the entire soccer goal to determine a 'Highlight', independent of any other activity taking place on the field. Again, The soccer goal must be fully visible, including both goalposts and the entire net between them, to be classified as a 'Highlight'. Your final response should be a SINGLE WORD ONLY: Word 'Normal' or Word 'Highlight' and DO NOT provide any other explaination.
         """
         
        
         
         
         # Create payloads for Bedrock Invoke, and can change model parameters to get the results you want.
+        ##"modelId": "anthropic.claude-3-opus-20240229-v1:0"
+        ###"modelId": "anthropic.claude-3-sonnet-20240229-v1:0"
         payload = {
-            "modelId": "anthropic.claude-3-sonnet-20240229-v1:0",
+            "modelId": "anthropic.claude-3-opus-20240229-v1:0",
             "contentType": "application/json",
             "accept": "application/json",
             "body": {

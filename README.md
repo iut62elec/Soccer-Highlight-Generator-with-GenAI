@@ -81,6 +81,9 @@ After the solution is deployed:
 5. After completion, you will receive an email at the subscribed address with a link to the highlight video.
 
 
+Note: Please increase the AWS Lambda concurrent execution limit for your account to 1000 through AWS Service Quotas. This is necessary to ensure the proper functioning of the highlight generation process.
+
+
 This example video highlight was generated using this solution. The tool processed an already extended highlighted video from the 2022 FIFA World Cup final between Argentina and France, originally 5 minutes long, provided by Fox. This game was chosen due to its high-scoring nature, including 6 goals and subsequent penalty shots. The generated highlight effectively removes all unnecessary moments, retaining only the goals and penalty kicks, and reduces the video to ~4 minutes. Feel free to test this tool with other games as well.
 
 
