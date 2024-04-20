@@ -390,21 +390,38 @@ class SoccerHighlightsStack(core.Stack):
                 max_attempts=300,
                 backoff_rate=2
             )
+            
+        def add_standard_retry_policy(task):
+            task.add_retry(
+                errors=["Lambda.TooManyRequestsException", "Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+                interval=core.Duration.seconds(10),
+                max_attempts=6,
+                backoff_rate=2
+            )
+    
         # Apply the retry policy
         add_custom_retry_policy(Thumbnails_Status_task)
         add_custom_retry_policy(check_sqs_empty_task)
         add_custom_retry_policy(ShortClips_status_task)
         add_custom_retry_policy(final_clips_status_task)
         add_custom_retry_policy(merge_clips_status_task)
+        
+        add_standard_retry_policy(Thumbnails_Status_task)
+        add_standard_retry_policy(check_sqs_empty_task)
+        add_standard_retry_policy(ShortClips_status_task)
+        add_standard_retry_policy(final_clips_status_task)
+        add_standard_retry_policy(merge_clips_status_task)
+        
+
         # Waits
         wait_for_thumbnail = sfn.Wait(
             self, 'Wait for Thumbnail',
-            time=sfn.WaitTime.duration(core.Duration.seconds(10))
+            time=sfn.WaitTime.duration(core.Duration.seconds(25))
         )
         
         wait_for_classification = sfn.Wait(
             self, 'Wait for classification',
-            time=sfn.WaitTime.duration(core.Duration.seconds(10))
+            time=sfn.WaitTime.duration(core.Duration.seconds(15))
         )
         
         wait_for_short_clip = sfn.Wait(
