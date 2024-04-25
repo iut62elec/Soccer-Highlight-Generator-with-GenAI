@@ -69,7 +69,7 @@ def lambda_handler(event, context):
         ##"modelId": "anthropic.claude-3-opus-20240229-v1:0"
         ###"modelId": "anthropic.claude-3-sonnet-20240229-v1:0"
         payload = {
-            "modelId": "anthropic.claude-3-opus-20240229-v1:0",
+            "modelId": "anthropic.claude-3-sonnet-20240229-v1:0",
             "contentType": "application/json",
             "accept": "application/json",
             "body": {
